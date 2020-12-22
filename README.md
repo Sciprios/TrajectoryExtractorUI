@@ -1,2 +1,2 @@
 # TrajectoryExtractorUI
-A extraction tool for trajectories.
+An extraction tool for trajectories using Pysplit.
