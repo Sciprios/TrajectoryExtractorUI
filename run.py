@@ -3,7 +3,7 @@ import pygubu
 
 
 
-class HelloWorldApp:
+class TrajectoryExtractor:
 
     def __init__(self):
         self.builder = builder = pygubu.Builder()
@@ -25,5 +25,5 @@ class HelloWorldApp:
 
 
 if __name__ == '__main__':
-    app = HelloWorldApp()
+    app = TrajectoryExtractor()
     app.run()
