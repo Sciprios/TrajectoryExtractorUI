@@ -1,0 +1,199 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.0">
+  <object class="ttk.Frame" id="frm_main">
+    <property name="height">200</property>
+    <property name="width">200</property>
+    <layout manager="grid">
+      <property name="column">0</property>
+      <property name="propagate">True</property>
+    </layout>
+    <child>
+      <object class="pygubu.builder.widgets.pathchooserinput" id="pc_meteo">
+        <property name="type">directory</property>
+        <layout manager="grid">
+          <property name="column">1</property>
+          <property name="propagate">True</property>
+          <property name="row">1</property>
+          <property name="sticky">w</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="pygubu.builder.widgets.pathchooserinput" id="pc_output">
+        <property name="type">directory</property>
+        <layout manager="grid">
+          <property name="column">1</property>
+          <property name="propagate">True</property>
+          <property name="row">2</property>
+          <property name="sticky">w</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="lbl_meteo">
+        <property name="font">{arial} 12 {}</property>
+        <property name="text" translatable="yes">Meteo. Files</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="propagate">True</property>
+          <property name="row">1</property>
+          <property name="sticky">w</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="lbl_output">
+        <property name="font">{Arial} 12 {}</property>
+        <property name="text" translatable="yes">Output Folder</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="propagate">True</property>
+          <property name="row">2</property>
+          <property name="sticky">w</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="lbl_start">
+        <property name="font">{Arial} 12 {}</property>
+        <property name="text" translatable="yes">Start Time</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="propagate">True</property>
+          <property name="row">3</property>
+          <property name="sticky">w</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Entry" id="tb_start_time">
+        <property name="text" translatable="yes">18</property>
+        <layout manager="grid">
+          <property name="column">1</property>
+          <property name="propagate">True</property>
+          <property name="row">3</property>
+          <property name="sticky">w</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Treeview" id="tv_dates">
+        <property name="height">4</property>
+        <property name="selectmode">extended</property>
+        <layout manager="grid">
+          <property name="column">2</property>
+          <property name="columnspan">2</property>
+          <property name="propagate">True</property>
+          <property name="row">1</property>
+          <property name="rowspan">4</property>
+          <property id="2" name="minsize" type="col">0</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="lbl_run_length">
+        <property name="font">{Arial} 12 {}</property>
+        <property name="text" translatable="yes">Run Length</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="propagate">True</property>
+          <property name="row">4</property>
+          <property name="sticky">w</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Entry" id="tb_run_time">
+        <property name="text" translatable="yes">-48</property>
+        <layout manager="grid">
+          <property name="column">1</property>
+          <property name="propagate">True</property>
+          <property name="row">4</property>
+          <property name="sticky">w</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="lbl_parameters">
+        <property name="font">{Arial} 14 {bold}</property>
+        <property name="text" translatable="yes">Trajectory Parameters</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="columnspan">2</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="lbl_dates">
+        <property name="font">{Arial} 14 {bold}</property>
+        <property name="text" translatable="yes">Extraction Dates</property>
+        <layout manager="grid">
+          <property name="column">2</property>
+          <property name="columnspan">2</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="pygubu.builder.widgets.pathchooserinput" id="pc_dates">
+        <property name="type">file</property>
+        <layout manager="grid">
+          <property name="column">3</property>
+          <property name="propagate">True</property>
+          <property name="row">5</property>
+          <property name="sticky">e</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="lbl_rainfall">
+        <property name="font">{Arial} 12 {}</property>
+        <property name="text" translatable="yes">Dates</property>
+        <layout manager="grid">
+          <property name="column">2</property>
+          <property name="propagate">True</property>
+          <property name="row">5</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="lbl_errors">
+        <property name="font">{Arial} 12 {bold}</property>
+        <property name="foreground">#ff1111</property>
+        <property name="text" translatable="yes">test error</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="columnspan">2</property>
+          <property name="propagate">True</property>
+          <property name="row">5</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="lbl_operations">
+        <property name="font">{Arial} 14 {bold}</property>
+        <property name="text" translatable="yes">Operations</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="columnspan">4</property>
+          <property name="propagate">True</property>
+          <property name="row">6</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Button" id="btn_test">
+        <property name="command">btn_test_clicked</property>
+        <property name="text" translatable="yes">TEST</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="propagate">True</property>
+          <property name="row">7</property>
+        </layout>
+      </object>
+    </child>
+  </object>
+</interface>
