@@ -15,8 +15,8 @@ class HelloWorldApp:
 
         builder.connect_callbacks(self)
     
-    def btn_test_clicked(self):
-        messagebox.showinfo('Message', 'You clicked Button TEST')
+    def btn_run_clicked(self):
+        messagebox.showinfo('Message', 'You clicked Button Run')
 
             
 
