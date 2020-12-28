@@ -9,6 +9,7 @@
     </layout>
     <child>
       <object class="pygubu.builder.widgets.pathchooserinput" id="pc_meteo">
+        <property name="textvariable">string:pc_meteo</property>
         <property name="type">directory</property>
         <layout manager="grid">
           <property name="column">1</property>
@@ -20,6 +21,7 @@
     </child>
     <child>
       <object class="pygubu.builder.widgets.pathchooserinput" id="pc_output">
+        <property name="textvariable">string:pc_output</property>
         <property name="type">directory</property>
         <layout manager="grid">
           <property name="column">1</property>
@@ -71,6 +73,7 @@
     <child>
       <object class="ttk.Entry" id="tb_start_time">
         <property name="text" translatable="yes">18</property>
+        <property name="textvariable">string:tb_start_time</property>
         <layout manager="grid">
           <property name="column">1</property>
           <property name="propagate">True</property>
@@ -109,6 +112,7 @@
     <child>
       <object class="ttk.Entry" id="tb_run_time">
         <property name="text" translatable="yes">-48</property>
+        <property name="textvariable">string:tb_run_time</property>
         <layout manager="grid">
           <property name="column">1</property>
           <property name="propagate">True</property>
@@ -144,6 +148,7 @@
     </child>
     <child>
       <object class="pygubu.builder.widgets.pathchooserinput" id="pc_dates">
+        <property name="textvariable">string:pc_dates</property>
         <property name="type">file</property>
         <layout manager="grid">
           <property name="column">3</property>
@@ -198,10 +203,22 @@
         <property name="text" translatable="yes">Run</property>
         <layout manager="grid">
           <property name="column">0</property>
-          <property name="columnspan">4</property>
+          <property name="columnspan">2</property>
           <property name="propagate">True</property>
           <property name="row">7</property>
           <property id="0" name="minsize" type="col">0</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Button" id="btn_dates">
+        <property name="command">btn_dates_clicked</property>
+        <property name="text" translatable="yes">Get Dates</property>
+        <layout manager="grid">
+          <property name="column">2</property>
+          <property name="columnspan">2</property>
+          <property name="propagate">True</property>
+          <property name="row">7</property>
         </layout>
       </object>
     </child>

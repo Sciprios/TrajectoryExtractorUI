@@ -24,8 +24,21 @@ class TrajectoryExtractorUI:
         """ Displays an error message. """
         self.builder.get_variable('lbl_errors').set(error_message)
     
+    def _get_input(self, input_lbl):
+        """ Retrieves input from the interface for a given object. """
+        return self.builder.get_variable(input_lbl).get()
+    
     def btn_run_clicked(self):
-        messagebox.showinfo('Message', 'You clicked Button Run')  
+        meteo_folder = self._get_input('pc_meteo')
+        output_folder = self._get_input('pc_output')
+        start_time = self._get_input('tb_start_time')
+        run_time = self._get_input('tb_run_time')
+        dates_file = self._get_input('pc_dates')
+        self._cont.extract(meteo_folder, output_folder, start_time, run_time, dates_file)
+    
+    def btn_dates_clicked(self):
+        """ Extract the dates from a given csv file. """
+        raise NotImplementedError()
 
     def run(self):
         self.mainwindow.mainloop()
