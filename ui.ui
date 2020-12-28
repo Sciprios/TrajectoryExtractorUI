@@ -169,6 +169,7 @@
         <property name="font">{Arial} 12 {bold}</property>
         <property name="foreground">#ff1111</property>
         <property name="text" translatable="yes">test error</property>
+        <property name="textvariable">string:lbl_errors</property>
         <layout manager="grid">
           <property name="column">0</property>
           <property name="columnspan">2</property>
