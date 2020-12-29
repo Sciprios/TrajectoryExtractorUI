@@ -41,7 +41,13 @@ class TrajectoryExtractorUI:
         for idx, e in enumerate(error_messages):
             message = message +"{}. {}\n".format(idx+1, e)
         messagebox.showerror(title="Input Error", message=message)
-        
+    
+    def _show_messages(self, messages):
+        """ Displays messages. """
+        message = ""
+        for idx, e in enumerate(messages):
+            message = message +"{}. {}\n".format(idx+1, e)
+        messagebox.showinfo(title="Info", message=message)
     
     def _get_input(self, input_lbl):
         """ Retrieves input from the interface for a given object. """
@@ -58,7 +64,7 @@ class TrajectoryExtractorUI:
         # Extract trajectories
         messages = self._cont.extract(meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file)
         if len(messages) > 0:
-            self._show_errors(messages)
+            self._show_messages(messages)
     
     def btn_dates_clicked(self):
         """ Extract the dates from a given csv file. """

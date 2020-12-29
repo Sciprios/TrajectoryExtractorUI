@@ -95,8 +95,8 @@ class Controller(object):
             pysplit.generate_bulktraj(
                 'traj_',
                 "C:/hysplit4/working",
-                "C:/Users/Andy/Desktop/TrajectoryExtractorUI/test_data/trajs/",
-                "E:/meteo/",
+                output_folder,
+                meteo_folder,
                 [year], [month],
                 [start_time],
                 [500],
