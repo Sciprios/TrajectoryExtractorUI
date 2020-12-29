@@ -16,13 +16,12 @@ class TrajectoryExtractorUI:
         self.toplevel.resizable(False, False)
 
         self.builder.connect_callbacks(self)
-
-        # Set starting text
-        self.builder.get_variable('lbl_errors').set("")
     
-    def _show_error(self, error_message):
-        """ Displays an error message. """
-        self.builder.get_variable('lbl_errors').set(error_message)
+    def _show_errors(self, error_messages):
+        """ Displays error messages. """
+        message = "\n".join(error_messages)
+        messagebox.showerror(title="Input Error", message=message)
+        
     
     def _get_input(self, input_lbl):
         """ Retrieves input from the interface for a given object. """

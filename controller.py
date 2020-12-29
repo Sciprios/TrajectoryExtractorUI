@@ -11,7 +11,7 @@ class Controller(object):
         """ Creates a GUI. """
         self._gui.run()
     
-    def extract(self, meteo_folder, output_folder, start_time, run_time, dates_file):
+    def extract(self, meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file):
         """ Extracts the trajectories. """
-        print("{}, {}, {}, {}, {}".format(meteo_folder, output_folder, start_time, run_time, dates_file))
+        print("{}, {}, {}, {}, {}, {}, {}".format(meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file))
         raise NotImplementedError()
