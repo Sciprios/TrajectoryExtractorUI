@@ -19,7 +19,9 @@ class TrajectoryExtractorUI:
     
     def _show_errors(self, error_messages):
         """ Displays error messages. """
-        message = "\n".join(error_messages)
+        message = ""
+        for idx, e in enumerate(error_messages):
+            message = message +"{}. {}\n".format(idx+1, e)
         messagebox.showerror(title="Input Error", message=message)
         
     
@@ -32,8 +34,11 @@ class TrajectoryExtractorUI:
         output_folder = self._get_input('pc_output')
         start_time = self._get_input('tb_start_time')
         run_time = self._get_input('tb_run_time')
+        longitude = self._get_input('tb_longitude')
+        latitude = self._get_input('tb_latitude')
         dates_file = self._get_input('pc_dates')
-        self._cont.extract(meteo_folder, output_folder, start_time, run_time, dates_file)
+        errors = self._cont.extract(meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file)
+        self._show_errors(errors)
     
     def btn_dates_clicked(self):
         """ Extract the dates from a given csv file. """
