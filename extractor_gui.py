@@ -2,7 +2,6 @@ from tkinter import messagebox
 import tkinter as tk
 import pygubu
 
-
 class TrajectoryExtractorUI:
 
     def __init__(self, controller):
@@ -19,6 +18,12 @@ class TrajectoryExtractorUI:
         self.builder.connect_callbacks(self)
 
         self._reset_dates()
+    
+    def update(self, progress, maxi=100):
+        """ Updates the progress bar on progress of extractions. """
+        pb = self.builder.get_object('pb_main')
+        pb['maximum'] = maxi
+        pb['value'] = progress
 
     def _reset_dates(self):
         tv = self.builder.get_object('tv_dates')
@@ -51,9 +56,9 @@ class TrajectoryExtractorUI:
         latitude = self._get_input('tb_latitude')
         dates_file = self._get_input('pc_dates')
         # Extract trajectories
-        errors = self._cont.extract(meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file)
-        if len(errors) > 0:
-            self._show_errors(errors)
+        messages = self._cont.extract(meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file)
+        if len(messages) > 0:
+            self._show_errors(messages)
     
     def btn_dates_clicked(self):
         """ Extract the dates from a given csv file. """

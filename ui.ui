@@ -175,7 +175,7 @@
         <property name="text" translatable="yes">Operations</property>
         <layout manager="grid">
           <property name="column">0</property>
-          <property name="columnspan">4</property>
+          <property name="columnspan">2</property>
           <property name="propagate">True</property>
           <property name="row">7</property>
           <property id="0" name="minsize" type="col">0</property>
@@ -188,7 +188,7 @@
         <property name="text" translatable="yes">Run</property>
         <layout manager="grid">
           <property name="column">0</property>
-          <property name="columnspan">2</property>
+          <property name="columnspan">1</property>
           <property name="propagate">True</property>
           <property name="row">8</property>
           <property id="0" name="minsize" type="col">0</property>
@@ -200,7 +200,7 @@
         <property name="command">btn_dates_clicked</property>
         <property name="text" translatable="yes">Get Dates</property>
         <layout manager="grid">
-          <property name="column">2</property>
+          <property name="column">1</property>
           <property name="columnspan">2</property>
           <property name="propagate">True</property>
           <property name="row">8</property>
@@ -218,6 +218,7 @@
           <property name="propagate">True</property>
           <property name="row">5</property>
           <property name="sticky">w</property>
+          <property id="0" name="minsize" type="col">0</property>
         </layout>
       </object>
     </child>
@@ -244,6 +245,7 @@
           <property name="propagate">True</property>
           <property name="row">6</property>
           <property name="sticky">w</property>
+          <property id="0" name="minsize" type="col">0</property>
         </layout>
       </object>
     </child>
@@ -256,6 +258,19 @@
           <property name="propagate">True</property>
           <property name="row">6</property>
           <property name="sticky">w</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Progressbar" id="pb_main">
+        <property name="orient">horizontal</property>
+        <layout manager="grid">
+          <property name="column">2</property>
+          <property name="columnspan">2</property>
+          <property name="propagate">True</property>
+          <property name="row">8</property>
+          <property id="0" name="minsize" type="col">0</property>
+          <property id="9" name="minsize" type="row">0</property>
         </layout>
       </object>
     </child>

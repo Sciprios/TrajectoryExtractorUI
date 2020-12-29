@@ -1,6 +1,7 @@
 from threading import Thread
 from extractor_gui import TrajectoryExtractorUI
 import numpy as np
+import pysplit
 import os
 
 class Controller(object):
@@ -8,6 +9,8 @@ class Controller(object):
 
     def __init__(self):
         self._gui = TrajectoryExtractorUI(self)
+        self._dates = None
+        self._extraction_thread = None
 
     def run(self):
         """ Creates a GUI. """
@@ -22,8 +25,6 @@ class Controller(object):
             return errors, dates
         # Extract dates from there.
         dates = self._extract_dates(date_file)
-        print(dates.shape)
-        print(len(dates.shape))
         if len(dates.shape) < 2:
             errors.append("Invalid date file, please provide data in the format day,month,year.")
         self._dates = dates
@@ -43,14 +44,69 @@ class Controller(object):
 
     def extract(self, meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file):
         """ Extracts the trajectories. """
-        print("{}, {}, {}, {}, {}, {}, {}".format(meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file))
-        errors = self._validate_requirements(meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file)
-        if len(errors) > 0:
-            return errors
-        # Check if any errors exist
-        #   IF they do return them
-        #   ELSE move onto extraction
-        raise NotImplementedError()
+        if self._extraction_thread is not None:
+            return ["Please wait for current extraction to finish."]
+        else:
+            print("Attempting extraction: {}, {}, {}, {}, {}, {}, {}".format(meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file))
+            init_vars, errors = self._validate_requirements(meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file)
+            # Check dates exist
+            if self._dates is None:
+                errors.append("Please extract dates first.")
+            if len(errors) > 0:
+                return errors
+            # Check meteorological files exist.
+            errors = self._test_meteorology(init_vars['meteo_folder'], self._dates)
+            print(errors)
+            if len(errors) > 0:
+                return errors
+            # Run extraction on a new thread.
+            self._extraction_thread = Thread(
+                target=self.get_trajs,
+                args=(
+                    self._extraction_update,
+                    self._dates,
+                    init_vars['latitude'],
+                    init_vars['longitude'],
+                    init_vars['output_folder'],
+                    init_vars['meteo_folder'],
+                    init_vars['start_time'],
+                    init_vars['run_time'],)
+            )
+            self._extraction_thread.start()
+            return ["Extracting Trajectories..."]
+    
+    def _extraction_update(self, progress):
+        """ Updates the GUI with extrcation progress. """
+        self._gui.update(progress)
+        if progress == 100:
+            self._extraction_thread = None
+    
+    def get_trajs(self, update_method, dates, lat, lon, output_folder, meteo_folder, start_time, run_time):
+        """ Extracts trajectories with the given initiation values. """
+        import time
+        print(dates)
+        for didx, d in enumerate(dates.astype(int)):
+            print("EXTRACTING {}".format(d))
+            day = d[0]
+            month = d[1]
+            year = d[2]
+
+            days = slice(int(day)-1, int(day), 1)
+            pysplit.generate_bulktraj(
+                'traj_',
+                "C:/hysplit4/working",
+                "C:/Users/Andy/Desktop/TrajectoryExtractorUI/test_data/trajs/",
+                "E:/meteo/",
+                [year], [month],
+                [start_time],
+                [500],
+                (lat, lon),
+                run_time,
+                monthslice=days,
+                meteo_bookends=([1, 2, 3, 4, 5], []),
+                get_reverse=False,
+                get_clipped=False)
+            update_method(((didx+1)/dates.shape[0])*100)
 
     def _validate_requirements(self, meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file):
         """ Validates the inputs, meteorological files and dates file to ensure data is valid before extraction. """
@@ -58,9 +114,7 @@ class Controller(object):
         # Validate inputs
         init_vars, init_errors = self._test_initiation_parameters(meteo_folder, output_folder, start_time, run_time, latitude, longitude)
         errors = errors + init_errors
-        # Validate dates file
-        # Validate meteorological files
-        return errors
+        return init_vars, errors
 
     def _test_initiation_parameters(self, meteo_folder, output_folder, start_time, run_time, latitude, longitude):
         """ Verifies inputs are valid, returning values and appropriate error messages. """
