@@ -61,11 +61,12 @@ class TrajectoryExtractorUI:
         errors, dates = self._cont.get_dates(dates_file)
         if len(errors) > 0:
             self._show_errors(errors)
-        # Update List View
-        tv = self.builder.get_object('tv_dates')
-        for date in dates.astype(int):
-            print(date)
-            tv.insert('', 'end', text=date[0], values=(date[1], date[2]))
+        else:
+            # Update List View
+            tv = self.builder.get_object('tv_dates')
+            for date in dates.astype(int):
+                print(date)
+                tv.insert('', 'end', text=date[0], values=(date[1], date[2]))
 
     def run(self):
         self.mainwindow.mainloop()

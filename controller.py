@@ -22,6 +22,10 @@ class Controller(object):
             return errors, dates
         # Extract dates from there.
         dates = self._extract_dates(date_file)
+        print(dates.shape)
+        print(len(dates.shape))
+        if len(dates.shape) < 2:
+            errors.append("Invalid date file, please provide data in the format day,month,year.")
         self._dates = dates
         return errors, dates
     
