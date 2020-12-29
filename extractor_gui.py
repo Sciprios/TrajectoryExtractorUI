@@ -1,4 +1,5 @@
 from tkinter import messagebox
+import tkinter as tk
 import pygubu
 
 
@@ -16,6 +17,18 @@ class TrajectoryExtractorUI:
         self.toplevel.resizable(False, False)
 
         self.builder.connect_callbacks(self)
+
+        self._reset_dates()
+
+    def _reset_dates(self):
+        tv = self.builder.get_object('tv_dates')
+        tv["columns"] = (2, 3)
+        tv.column("#0", width=50, minwidth=50, stretch=tk.NO)
+        tv.column(2, width=50, minwidth=50, stretch=tk.NO)
+        tv.column(3, width=50, minwidth=50, stretch=tk.NO)
+        tv.heading("#0",text="Day",anchor=tk.W)
+        tv.heading(2, text="Month",anchor=tk.W)
+        tv.heading(3, text="Year",anchor=tk.W)
     
     def _show_errors(self, error_messages):
         """ Displays error messages. """
@@ -49,6 +62,10 @@ class TrajectoryExtractorUI:
         if len(errors) > 0:
             self._show_errors(errors)
         # Update List View
+        tv = self.builder.get_object('tv_dates')
+        for date in dates.astype(int):
+            print(date)
+            tv.insert('', 'end', text=date[0], values=(date[1], date[2]))
 
     def run(self):
         self.mainwindow.mainloop()

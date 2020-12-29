@@ -1,5 +1,6 @@
 from threading import Thread
 from extractor_gui import TrajectoryExtractorUI
+import numpy as np
 import os
 
 class Controller(object):
@@ -20,8 +21,13 @@ class Controller(object):
         if len(errors) > 0:
             return errors, dates
         # Extract dates from there.
-        raise NotImplementedError()
+        dates = self._extract_dates(date_file)
         return errors, dates
+    
+    def _extract_dates(self, date_file):
+        """ Extracts dates, assuming a particular format. """
+        dates = np.genfromtxt(date_file, delimiter=',')
+        return dates
 
     def _test_dates(self, dates_file):
         """ Verifies dates file. """
@@ -35,7 +41,6 @@ class Controller(object):
         print("{}, {}, {}, {}, {}, {}, {}".format(meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file))
         errors = self._validate_requirements(meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file)
         if len(errors) > 0:
-            print(errors)
             return errors
         # Check if any errors exist
         #   IF they do return them
