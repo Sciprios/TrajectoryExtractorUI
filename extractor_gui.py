@@ -37,12 +37,18 @@ class TrajectoryExtractorUI:
         longitude = self._get_input('tb_longitude')
         latitude = self._get_input('tb_latitude')
         dates_file = self._get_input('pc_dates')
+        # Extract trajectories
         errors = self._cont.extract(meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file)
-        self._show_errors(errors)
+        if len(errors) > 0:
+            self._show_errors(errors)
     
     def btn_dates_clicked(self):
         """ Extract the dates from a given csv file. """
-        raise NotImplementedError()
+        dates_file = self._get_input('pc_dates')
+        errors, dates = self._cont.get_dates(dates_file)
+        if len(errors) > 0:
+            self._show_errors(errors)
+        # Update List View
 
     def run(self):
         self.mainwindow.mainloop()

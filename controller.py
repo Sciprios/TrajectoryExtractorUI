@@ -12,6 +12,24 @@ class Controller(object):
         """ Creates a GUI. """
         self._gui.run()
     
+    def get_dates(self, date_file):
+        """ Retrieves dates from a given file. """
+        dates = []
+        # Test dates file exists.
+        errors = self._test_dates(date_file)
+        if len(errors) > 0:
+            return errors, dates
+        # Extract dates from there.
+        raise NotImplementedError()
+        return errors, dates
+
+    def _test_dates(self, dates_file):
+        """ Verifies dates file. """
+        errors = []
+        if not os.path.isfile(dates_file):
+            errors.append("Dates file must be a file.")
+        return errors
+
     def extract(self, meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file):
         """ Extracts the trajectories. """
         print("{}, {}, {}, {}, {}, {}, {}".format(meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file))
@@ -71,12 +89,6 @@ class Controller(object):
             vals["longitude"] = longitude
             vals["latitude"] = latitude
         return vals, errors
-    
-    def _test_dates(self, dates_file):
-        """ Verifies dates and extracts them from the file provided. """
-        errors = []
-        dates = []
-        return errors, dates
 
     def _test_meteorology(self, meteo_folder, dates):
         """ Verifies meteorological files are available for all dates requested. """
