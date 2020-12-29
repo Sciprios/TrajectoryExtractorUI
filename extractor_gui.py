@@ -81,6 +81,13 @@ class TrajectoryExtractorUI:
             for date in dates.astype(int):
                 print(date)
                 tv.insert('', 'end', text=date[0], values=(date[1], date[2]))
+    
+    def btn_get_meteo_clicked(self):
+        """ Retrieves any missing meteo files. """
+        meteo_folder = self._get_input('pc_meteo')
+        messages = self._cont.check_meteo_files(meteo_folder)
+        if len(messages) > 0:
+            self._show_messages(messages)
 
     def run(self):
         self.mainwindow.mainloop()

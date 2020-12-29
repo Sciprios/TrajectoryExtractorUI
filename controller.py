@@ -1,6 +1,8 @@
 from threading import Thread
 from extractor_gui import TrajectoryExtractorUI
+from ftplib import FTP
 import numpy as np
+import datetime
 import pysplit
 import os
 
@@ -10,11 +12,60 @@ class Controller(object):
     def __init__(self):
         self._gui = TrajectoryExtractorUI(self)
         self._dates = None
-        self._extraction_thread = None
+        self._worker_thread = None
 
     def run(self):
         """ Creates a GUI. """
         self._gui.run()
+    
+    def check_meteo_files(self, meteo_folder):
+        """ Checks and downloads missing meteo files. """
+        messages = []
+        # Check dates and meteofolder have been loaded
+        if not os.path.isdir(meteo_folder):
+            messages.append("Meteorological folder must be a folder.")
+        if self._dates is None:
+            messages.append("Please load dates first.")
+        # Check worker isn't busy
+        if self._worker_thread is not None:
+            messages.append("Please wait for current operation to finish first.")
+        if len(messages) == 0:
+            # Setup worker
+            # Run worker
+            self._worker_thread = Thread(
+                target=self._download_meteo_files,
+                args=(meteo_folder,)
+            )
+            self._worker_thread.start()
+            messages.append("Downloading Meteorological files...")
+        return messages
+    
+    def _download_meteo_files(self, meteo_folder):
+        """ Method to download meteorological files that don't exist. """
+        for didx, d in enumerate(self._dates.astype(int)):
+            dte = datetime.date(d[2], d[1], d[0])
+            file_location = meteo_folder + "/" + dte.strftime(
+                "RP%b-{}.gbl1"
+            ).format(str(d[2])[-2:])
+            file_down_name = 'RP{}{:02d}.gbl'.format(d[2], d[1])
+            if not os.path.exists(file_location):
+                ftp = FTP('arlftp.arlhq.noaa.gov')
+                ftp.login()
+                ftp.cwd('pub/archives/reanalysis')
+                with open(file_location, 'wb') as local_file:
+                    print("Retrieving file: {}".format(file_down_name))
+                    ftp.retrbinary(
+                        "RETR /pub/archives/reanalysis/" + file_down_name,
+                        local_file.write
+                    )
+            self._meteo_update(((didx+1)/self._dates.shape[0])*100)
+
+    def _meteo_update(self, progress, messages=[]):
+        """ Updates the GUI with extrcation progress. """
+        if progress == 100:
+            self._worker_thread = None
+            messages.append("COMPLETED")
+        self._gui.update(progress, messages=messages)
     
     def get_dates(self, date_file):
         """ Retrieves dates from a given file. """
@@ -44,7 +95,7 @@ class Controller(object):
 
     def extract(self, meteo_folder, output_folder, start_time, run_time, altitude, latitude, longitude, dates_file):
         """ Extracts the trajectories. """
-        if self._extraction_thread is not None:
+        if self._worker_thread is not None:
             return ["Please wait for current extraction to finish."]
         else:
             print("Attempting extraction: {}, {}, {}, {}, {}, {}, {}, {}".format(meteo_folder, output_folder, start_time, run_time, altitude, latitude, longitude, dates_file))
@@ -61,7 +112,7 @@ class Controller(object):
                 return errors
             # Run extraction on a new thread.
             print(init_vars['altitude'])
-            self._extraction_thread = Thread(
+            self._worker_thread = Thread(
                 target=self.get_trajs,
                 args=(
                     self._extraction_update,
@@ -74,13 +125,13 @@ class Controller(object):
                     init_vars['start_time'],
                     init_vars['run_time'],)
             )
-            self._extraction_thread.start()
+            self._worker_thread.start()
             return ["Extracting Trajectories..."]
     
     def _extraction_update(self, progress, messages=[]):
         """ Updates the GUI with extrcation progress. """
         if progress == 100:
-            self._extraction_thread = None
+            self._worker_thread = None
             messages.append("COMPLETED")
         self._gui.update(progress, messages=messages)
     
