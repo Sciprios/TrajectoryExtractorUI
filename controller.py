@@ -22,6 +22,7 @@ class Controller(object):
             return errors, dates
         # Extract dates from there.
         dates = self._extract_dates(date_file)
+        self._dates = dates
         return errors, dates
     
     def _extract_dates(self, date_file):
