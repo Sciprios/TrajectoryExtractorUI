@@ -19,11 +19,13 @@ class TrajectoryExtractorUI:
 
         self._reset_dates()
     
-    def update(self, progress, maxi=100):
+    def update(self, progress, maxi=100, messages=[]):
         """ Updates the progress bar on progress of extractions. """
         pb = self.builder.get_object('pb_main')
         pb['maximum'] = maxi
         pb['value'] = progress
+        if len(messages) > 0:
+            self._show_messages(messages)
 
     def _reset_dates(self):
         tv = self.builder.get_object('tv_dates')
@@ -58,11 +60,12 @@ class TrajectoryExtractorUI:
         output_folder = self._get_input('pc_output')
         start_time = self._get_input('tb_start_time')
         run_time = self._get_input('tb_run_time')
+        altitude = self._get_input('tb_altitude')
         longitude = self._get_input('tb_longitude')
         latitude = self._get_input('tb_latitude')
         dates_file = self._get_input('pc_dates')
         # Extract trajectories
-        messages = self._cont.extract(meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file)
+        messages = self._cont.extract(meteo_folder, output_folder, start_time, run_time, altitude, latitude, longitude, dates_file)
         if len(messages) > 0:
             self._show_messages(messages)
     

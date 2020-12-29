@@ -42,13 +42,13 @@ class Controller(object):
             errors.append("Dates file must be a file.")
         return errors
 
-    def extract(self, meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file):
+    def extract(self, meteo_folder, output_folder, start_time, run_time, altitude, latitude, longitude, dates_file):
         """ Extracts the trajectories. """
         if self._extraction_thread is not None:
             return ["Please wait for current extraction to finish."]
         else:
-            print("Attempting extraction: {}, {}, {}, {}, {}, {}, {}".format(meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file))
-            init_vars, errors = self._validate_requirements(meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file)
+            print("Attempting extraction: {}, {}, {}, {}, {}, {}, {}, {}".format(meteo_folder, output_folder, start_time, run_time, altitude, latitude, longitude, dates_file))
+            init_vars, errors = self._validate_requirements(meteo_folder, output_folder, start_time, run_time, altitude, latitude, longitude, dates_file)
             # Check dates exist
             if self._dates is None:
                 errors.append("Please extract dates first.")
@@ -60,6 +60,7 @@ class Controller(object):
             if len(errors) > 0:
                 return errors
             # Run extraction on a new thread.
+            print(init_vars['altitude'])
             self._extraction_thread = Thread(
                 target=self.get_trajs,
                 args=(
@@ -67,6 +68,7 @@ class Controller(object):
                     self._dates,
                     init_vars['latitude'],
                     init_vars['longitude'],
+                    init_vars['altitude'],
                     init_vars['output_folder'],
                     init_vars['meteo_folder'],
                     init_vars['start_time'],
@@ -75,16 +77,15 @@ class Controller(object):
             self._extraction_thread.start()
             return ["Extracting Trajectories..."]
     
-    def _extraction_update(self, progress):
+    def _extraction_update(self, progress, messages=[]):
         """ Updates the GUI with extrcation progress. """
-        self._gui.update(progress)
         if progress == 100:
             self._extraction_thread = None
+            messages.append("COMPLETED")
+        self._gui.update(progress, messages=messages)
     
-    def get_trajs(self, update_method, dates, lat, lon, output_folder, meteo_folder, start_time, run_time):
+    def get_trajs(self, update_method, dates, lat, lon, altitude, output_folder, meteo_folder, start_time, run_time):
         """ Extracts trajectories with the given initiation values. """
-        import time
-        print(dates)
         for didx, d in enumerate(dates.astype(int)):
             print("EXTRACTING {}".format(d))
             day = d[0]
@@ -92,31 +93,36 @@ class Controller(object):
             year = d[2]
 
             days = slice(int(day)-1, int(day), 1)
-            pysplit.generate_bulktraj(
+            try:
+                pysplit.generate_bulktraj(
                 'traj_',
                 "C:/hysplit4/working",
                 output_folder,
                 meteo_folder,
                 [year], [month],
                 [start_time],
-                [500],
+                [altitude],
                 (lat, lon),
                 run_time,
                 monthslice=days,
                 meteo_bookends=([1, 2, 3, 4, 5], []),
                 get_reverse=False,
                 get_clipped=False)
-            update_method(((didx+1)/dates.shape[0])*100)
+            except OSError:
+                update_method(((didx+1)/dates.shape[0])*100, messages=["Meteorological files missing for event {}-{}-{}".format(day, month, year)])
+            else:
+                update_method(((didx+1)/dates.shape[0])*100)
+                
 
-    def _validate_requirements(self, meteo_folder, output_folder, start_time, run_time, latitude, longitude, dates_file):
+    def _validate_requirements(self, meteo_folder, output_folder, start_time, run_time, altitude, latitude, longitude, dates_file):
         """ Validates the inputs, meteorological files and dates file to ensure data is valid before extraction. """
         errors = []
         # Validate inputs
-        init_vars, init_errors = self._test_initiation_parameters(meteo_folder, output_folder, start_time, run_time, latitude, longitude)
+        init_vars, init_errors = self._test_initiation_parameters(meteo_folder, output_folder, start_time, run_time, altitude, latitude, longitude)
         errors = errors + init_errors
         return init_vars, errors
 
-    def _test_initiation_parameters(self, meteo_folder, output_folder, start_time, run_time, latitude, longitude):
+    def _test_initiation_parameters(self, meteo_folder, output_folder, start_time, run_time, altitude, latitude, longitude):
         """ Verifies inputs are valid, returning values and appropriate error messages. """
         errors = []
         vals = {}
@@ -130,15 +136,26 @@ class Controller(object):
             errors.append("Meteorological folder must be a folder.")
         else:
             vals["meteo_folder"] = meteo_folder
-        # Ensure start time are integers.
+        # Ensure start and run times are integers.
         try:
             start_time = int(start_time)
             run_time = int(run_time)
         except ValueError:
             errors.append("Start and run times must be an integers, e.g start time: '18' for 18:00 or '0' for 00:00 and run time: '-5' or '48'.")
         else:
+            if start_time < 0:
+                errors.append("Start time cannot be negative.")
             vals["start_time"] = start_time
             vals["run_time"] = run_time
+        # Ensure altitude is valid
+        try:
+            altitude = int(altitude)
+        except ValueError:
+            errors.append("Altitude must be an integer in meters (m).,e.g 500, 1250 etc.")
+        else:
+            if altitude < 1:
+                errors.append("Altitude cannot be < 500m.")
+            vals["altitude"] = altitude
         # Ensure longitude and latitude are floats.
         try:
             longitude = float(longitude)
