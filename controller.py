@@ -37,7 +37,7 @@ class Controller(object):
                 args=(meteo_folder,)
             )
             self._worker_thread.start()
-            messages.append("Downloading Meteorological files...")
+            messages.append("Downloading Meteorological files... This might take a while!")
         return messages
     
     def _download_meteo_files(self, meteo_folder):
@@ -49,6 +49,9 @@ class Controller(object):
             ).format(str(d[2])[-2:])
             file_down_name = 'RP{}{:02d}.gbl'.format(d[2], d[1])
             if not os.path.exists(file_location):
+                self._meteo_update(
+                    ((didx)/self._dates.shape[0])*100,
+                    messages=["Downloading meteorology for {}/{}".format(d[1], d[2])])
                 ftp = FTP('arlftp.arlhq.noaa.gov')
                 ftp.login()
                 ftp.cwd('pub/archives/reanalysis')
