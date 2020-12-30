@@ -15,11 +15,15 @@ class Controller(object):
         self._worker_thread = None
 
     def run(self):
-        """ Creates a GUI. """
+        """ Creates and runs the GUI. """
         self._gui.run()
     
     def check_meteo_files(self, meteo_folder):
-        """ Checks and downloads missing meteo files. """
+        """ Checks for meteo files and downloads any that are missing.
+            Parameters:
+                - meteo_folder (string): Folder containing (or which should contain) meteorological files.
+            Returns:
+                - List<String> : List of messages to display to the user."""
         messages = []
         # Check dates and meteofolder have been loaded
         if not os.path.isdir(meteo_folder):
@@ -41,7 +45,9 @@ class Controller(object):
         return messages
     
     def _download_meteo_files(self, meteo_folder):
-        """ Method to download meteorological files that don't exist. """
+        """ Method to download meteorological files that don't exist.
+            Parameters:
+                - meteo_folder (string): Folder containing (or which should contain) meteorological files."""
         for didx, d in enumerate(self._dates.astype(int)):
             dte = datetime.date(d[2], d[1], d[0])
             file_location = meteo_folder + "/" + dte.strftime(
@@ -64,14 +70,22 @@ class Controller(object):
             self._meteo_update(((didx+1)/self._dates.shape[0])*100)
 
     def _meteo_update(self, progress, messages=[]):
-        """ Updates the GUI with extrcation progress. """
+        """ Updates the GUI with extrcation progress.
+            Parameters:
+                - progress (int): Percentage completion of the meteorological downloads/checking.
+                - messages (List<String>): Any messages to display to the user with this GUI update."""
         if progress == 100:
             self._worker_thread = None
             messages.append("COMPLETED")
         self._gui.update(progress, messages=messages)
     
     def get_dates(self, date_file):
-        """ Retrieves dates from a given file. """
+        """ Retrieves dates from a given file.
+            Parameters:
+                - date_file (string): File containing dates to be extracted.
+            Returns:
+                - List<String> : List of errors to display to the user.
+                - 2D Numpy Array : Dates in the format Day, Month, Year."""
         dates = []
         # Test dates file exists.
         errors = self._test_dates(date_file)
@@ -85,19 +99,38 @@ class Controller(object):
         return errors, dates
     
     def _extract_dates(self, date_file):
-        """ Extracts dates, assuming a particular format. """
+        """ Extracts dates, assuming a particular format.
+            Parameters:
+                - date_file (string): File containing dates to be extracted.
+            Returns:
+                - 2D Numpy Array : Dates in the format Day, Month, Year."""
         dates = np.genfromtxt(date_file, delimiter=',')
         return dates
 
     def _test_dates(self, dates_file):
-        """ Verifies dates file. """
+        """ Verifies dates file.
+            Parameters:
+                - dates_file (string): File containing dates to be extracted.
+            Returns:
+                - List<String> : List of errors to display to the user."""
         errors = []
         if not os.path.isfile(dates_file):
             errors.append("Dates file must be a file.")
         return errors
 
     def extract(self, meteo_folder, output_folder, start_time, run_time, altitude, latitude, longitude, dates_file):
-        """ Extracts the trajectories. """
+        """ Extracts the trajectories.
+            Parameters:
+                - meteo_folder (string): Folder containing meteorological data.
+                - output_folder (string): Folder in which to store the trajectories.
+                - start_time (string): Time using the 24-hour clock to start extraction from.
+                - run_time (string): Number of hours to run the trajectory for. Negative numbers represent reverse trajectories.
+                - altitude (string): Height to start extraction in meters.
+                - latitude (string): Latitude to extract trajectories from.
+                - longitude (string): Longitude to extract trajectories from.
+                - dates_file (string): File containing dates to be extracted.
+            Returns:
+                - List<String> : List of errors to display to the user."""
         if self._worker_thread is not None:
             return ["Please wait for current extraction to finish."]
         else:
@@ -106,11 +139,6 @@ class Controller(object):
             # Check dates exist
             if self._dates is None:
                 errors.append("Please extract dates first.")
-            if len(errors) > 0:
-                return errors
-            # Check meteorological files exist.
-            errors = self._test_meteorology(init_vars['meteo_folder'], self._dates)
-            print(errors)
             if len(errors) > 0:
                 return errors
             # Run extraction on a new thread.
@@ -132,14 +160,27 @@ class Controller(object):
             return ["Extracting Trajectories..."]
     
     def _extraction_update(self, progress, messages=[]):
-        """ Updates the GUI with extrcation progress. """
+        """ Updates the GUI with extraction progress. 
+            Parameters:
+                - progress (int): Percentage completion of the trajectory extraction.
+                - messages (List<String>): Any messages to display to the user with this GUI update."""
         if progress == 100:
             self._worker_thread = None
             messages.append("COMPLETED")
         self._gui.update(progress, messages=messages)
     
     def get_trajs(self, update_method, dates, lat, lon, altitude, output_folder, meteo_folder, start_time, run_time):
-        """ Extracts trajectories with the given initiation values. """
+        """ Extracts trajectories with the given initiation values.
+            Parameters:
+                - update_method (method): Method to call on each trajectory extraction.
+                - dates (2D Numpy Array): Dates in the format Day, Month, Year.
+                - lat (float): Latitude to extract trajectories from.
+                - lon (float): Longitude to extract trajectories from.
+                - altitude (int): Height to start extraction in meters.
+                - output_folder (string): Folder in which to store the trajectories.
+                - meteo_folder (string): Folder containing meteorological data.
+                - start_time (int): Time using the 24-hour clock to start extraction from.
+                - run_time (int): Number of hours to run the trajectory for. Negative numbers represent reverse trajectories."""
         for didx, d in enumerate(dates.astype(int)):
             print("EXTRACTING {}".format(d))
             day = d[0]
@@ -169,7 +210,19 @@ class Controller(object):
                 
 
     def _validate_requirements(self, meteo_folder, output_folder, start_time, run_time, altitude, latitude, longitude, dates_file):
-        """ Validates the inputs, meteorological files and dates file to ensure data is valid before extraction. """
+        """ Validates the inputs, meteorological files and dates file to ensure data is valid before extraction.
+            Parameters:
+                - meteo_folder (string): Folder containing meteorological data.
+                - output_folder (string): Folder in which to store the trajectories.
+                - start_time (string): Time using the 24-hour clock to start extraction from.
+                - run_time (string): Number of hours to run the trajectory for. Negative numbers represent reverse trajectories.
+                - altitude (string): Height to start extraction in meters.
+                - latitude (string): Latitude to extract trajectories from.
+                - longitude (string): Longitude to extract trajectories from.
+                - dates_file (string): File containing dates to be extracted.
+            Returns:
+                - Dictionary : Converted initiation values.
+                - List<String> : List of errors to display to the user."""
         errors = []
         # Validate inputs
         init_vars, init_errors = self._test_initiation_parameters(meteo_folder, output_folder, start_time, run_time, altitude, latitude, longitude)
@@ -177,7 +230,18 @@ class Controller(object):
         return init_vars, errors
 
     def _test_initiation_parameters(self, meteo_folder, output_folder, start_time, run_time, altitude, latitude, longitude):
-        """ Verifies inputs are valid, returning values and appropriate error messages. """
+        """ Verifies inputs are valid, returning values and appropriate error messages.
+            Parameters:
+                - meteo_folder (string): Folder containing meteorological data.
+                - output_folder (string): Folder in which to store the trajectories.
+                - start_time (string): Time using the 24-hour clock to start extraction from.
+                - run_time (string): Number of hours to run the trajectory for. Negative numbers represent reverse trajectories.
+                - altitude (string): Height to start extraction in meters.
+                - latitude (string): Latitude to extract trajectories from.
+                - longitude (string): Longitude to extract trajectories from.
+            Returns:
+                - Dictionary : Converted initiation values.
+                - List<String> : List of errors to display to the user."""
         errors = []
         vals = {}
         # Check the output folder is a directory that exists
@@ -224,8 +288,3 @@ class Controller(object):
             vals["longitude"] = longitude
             vals["latitude"] = latitude
         return vals, errors
-
-    def _test_meteorology(self, meteo_folder, dates):
-        """ Verifies meteorological files are available for all dates requested. """
-        errors = []
-        return errors
