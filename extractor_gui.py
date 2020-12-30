@@ -37,6 +37,11 @@ class TrajectoryExtractorUI:
         tv.heading(2, text="Month",anchor=tk.W)
         tv.heading(3, text="Year",anchor=tk.W)
     
+    def _show_messages(self, messages):
+        """ Shows messages to the user. The messages parameter should be a dictionary with a list of 'errors' and 'infos' """
+        self._show_errors(messages['errors'])
+        self._show_infos(messages['infos'])
+
     def _show_errors(self, error_messages):
         """ Displays error messages. """
         message = ""
@@ -44,7 +49,7 @@ class TrajectoryExtractorUI:
             message = message +"{}. {}\n".format(idx+1, e)
         messagebox.showerror(title="Input Error", message=message)
     
-    def _show_messages(self, messages):
+    def _show_infos(self, messages):
         """ Displays messages. """
         message = ""
         for idx, e in enumerate(messages):

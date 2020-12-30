@@ -20,15 +20,15 @@ class Controller(object):
     
     def check_meteo_files(self, meteo_folder):
         """ Checks and downloads missing meteo files. """
-        messages = []
+        messages = {'errors': [], 'infos': []}
         # Check dates and meteofolder have been loaded
         if not os.path.isdir(meteo_folder):
-            messages.append("Meteorological folder must be a folder.")
+            messages['errors'].append("Meteorological folder must be a folder.")
         if self._dates is None:
-            messages.append("Please load dates first.")
+            messages['errors'].append("Please load dates first.")
         # Check worker isn't busy
         if self._worker_thread is not None:
-            messages.append("Please wait for current operation to finish first.")
+            messages['errors'].append("Please wait for current operation to finish first.")
         if len(messages) == 0:
             # Setup worker
             # Run worker
@@ -37,7 +37,7 @@ class Controller(object):
                 args=(meteo_folder,)
             )
             self._worker_thread.start()
-            messages.append("Downloading Meteorological files... This might take a while!")
+            messages['infos'].append("Downloading Meteorological files... This might take a while!")
         return messages
     
     def _download_meteo_files(self, meteo_folder):
@@ -68,7 +68,7 @@ class Controller(object):
         if progress == 100:
             self._worker_thread = None
             messages.append("COMPLETED")
-        self._gui.update(progress, messages=messages)
+        self._gui.update(progress, messages={'infos': messages})
     
     def get_dates(self, date_file):
         """ Retrieves dates from a given file. """
@@ -82,7 +82,7 @@ class Controller(object):
         if len(dates.shape) < 2:
             errors.append("Invalid date file, please provide data in the format day,month,year.")
         self._dates = dates
-        return errors, dates
+        return {'errors': errors}, dates
     
     def _extract_dates(self, date_file):
         """ Extracts dates, assuming a particular format. """
@@ -94,7 +94,7 @@ class Controller(object):
         errors = []
         if not os.path.isfile(dates_file):
             errors.append("Dates file must be a file.")
-        return errors
+        return {'errors': errors}
 
     def extract(self, meteo_folder, output_folder, start_time, run_time, altitude, latitude, longitude, dates_file):
         """ Extracts the trajectories. """
@@ -107,12 +107,7 @@ class Controller(object):
             if self._dates is None:
                 errors.append("Please extract dates first.")
             if len(errors) > 0:
-                return errors
-            # Check meteorological files exist.
-            errors = self._test_meteorology(init_vars['meteo_folder'], self._dates)
-            print(errors)
-            if len(errors) > 0:
-                return errors
+                return {'errors': errors}
             # Run extraction on a new thread.
             print(init_vars['altitude'])
             self._worker_thread = Thread(
@@ -129,14 +124,14 @@ class Controller(object):
                     init_vars['run_time'],)
             )
             self._worker_thread.start()
-            return ["Extracting Trajectories..."]
+            return {'infos': ["Extracting Trajectories..."]}
     
     def _extraction_update(self, progress, messages=[]):
         """ Updates the GUI with extrcation progress. """
         if progress == 100:
             self._worker_thread = None
             messages.append("COMPLETED")
-        self._gui.update(progress, messages=messages)
+        self._gui.update(progress, messages={'infos': messages})
     
     def get_trajs(self, update_method, dates, lat, lon, altitude, output_folder, meteo_folder, start_time, run_time):
         """ Extracts trajectories with the given initiation values. """
@@ -174,7 +169,7 @@ class Controller(object):
         # Validate inputs
         init_vars, init_errors = self._test_initiation_parameters(meteo_folder, output_folder, start_time, run_time, altitude, latitude, longitude)
         errors = errors + init_errors
-        return init_vars, errors
+        return init_vars, {'errors': errors}
 
     def _test_initiation_parameters(self, meteo_folder, output_folder, start_time, run_time, altitude, latitude, longitude):
         """ Verifies inputs are valid, returning values and appropriate error messages. """
@@ -223,9 +218,4 @@ class Controller(object):
                 errors.append("Latitude must be between 90 and -90 degrees.")
             vals["longitude"] = longitude
             vals["latitude"] = latitude
-        return vals, errors
-
-    def _test_meteorology(self, meteo_folder, dates):
-        """ Verifies meteorological files are available for all dates requested. """
-        errors = []
-        return errors
+        return vals, {'errors': errors}
