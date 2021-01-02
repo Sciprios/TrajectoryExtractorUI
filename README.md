@@ -1,5 +1,5 @@
 # TrajectoryExtractorUI
-A GUI extraction tool for trajectories using Pysplit.
+A GUI extraction tool to extract trajectories for a set of dates using a given set of parameters.
 
 ## Requirements
  Written and tested using Python 3.7 and Hysplit. All required libraries are given in the `requirements.txt` file. To install these using the following commands:
