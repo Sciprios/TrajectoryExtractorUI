@@ -2,13 +2,21 @@
 A GUI extraction tool to extract trajectories for a set of dates using a given set of parameters.
 
 ## Requirements
- Written and tested using Python 3.7 and Hysplit. All required libraries are given in the `requirements.txt` file. To install these using the following commands:
+ Written and tested using Python 3.7 and Hysplit. All required libraries are given in the `requirements.txt` file. To install via Anaconda:
 
-### Anaconda
-    conda install --file requirements.txt
+1. Open an Anaconda prompt.
+2. `cd` into this folder (TrajectoryExtractorUI).
+3. Run the following command: `conda create --name <env_name> --file requirements.txt`
 
-### Pip
-    pip install -r requirements.txt
+
+## Running the Program
+
+To run the program:
+
+1. Open an Anaconda prompt.
+2. `cd` into this folder (TrajectoryExtractorUI).
+3. Activate the environment created in the previous section.
+4. Run the program using: `python run.py`.
 
 ## Extraction Process
 
